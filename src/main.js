@@ -20,6 +20,10 @@ import router from './router'
 import '@/icons'
 // 导入权限认证
 import '@/permission'
+// 导入axios 实例
+import request from '@/utils/request'
+// 将axios挂载到vue实例对象中
+Vue.prototype.$http = request
 
 /**
  * If you don't want to use mock-server

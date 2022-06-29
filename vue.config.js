@@ -35,6 +35,18 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
+    },
+    // 代理配置
+    proxy: {
+    // 这里的api 表示如果我们的请求地址有/api的时候就会触发代理机制
+    // 当我们的本地请求 有/api的时候，就会代理我们的请求地址向另外一个服务器发出请求
+      '/api': {
+        target: 'http://ihrm-java.itheima.net' // 跨域请求的地址
+      }
+      // 如果请求路径中不包含 /api 则需要路径重写
+      // pathRewite: {
+      //   '^/api': '' // 假设我们想把localhost：8888/api/login 变成 www.baidu.com/login就需要这么做
+      // }
     }
   },
   configureWebpack: {
