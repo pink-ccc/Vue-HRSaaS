@@ -10,3 +10,19 @@ export const reqLogin = (data) => {
 
   })
 }
+
+// 导出获取用户资料接口
+export const reqGetUserInfo = () => {
+  return request({
+    method: 'post',
+    url: '/sys/profile'
+  })
+}
+
+// 导出获取用户头像接口
+export const reqGetUserDetailById = (id) => {
+  return request({
+    method: 'get',
+    url: `/sys/user/${id}`
+  })
+}

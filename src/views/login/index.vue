@@ -116,12 +116,15 @@ export default {
       // 表单兜底校验
       this.$refs.loginForm.validate(async valid => {
         if (!valid) return
-        // 发送ajax
-        // const res = await this.$http.post('http://localhost:8848/api/sys/login', this.loginForm)
-        // const res = await reqLogin(this.loginForm)
-        // 得到数据 将token保存到vuex中
-        // 调用getToken函数 并将数据传参
-        this.getToken(this.loginForm)
+        // 发送登录请求，调用action
+        try {
+          this.loading = true
+          await this.getToken(this.loginForm)
+          this.$router.push('/')
+          this.$message.success('登录成功')
+        } finally {
+          this.loading = false
+        }
       })
     }
   }
