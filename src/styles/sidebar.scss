@@ -27,8 +27,8 @@
     }
 
     .scrollbar-wrapper {
-      overflow-x: hidden !important;
       background: url('~@/assets/common/leftnavBg.png') no-repeat 0 100%;
+      overflow-x: hidden !important;
     }
 
     .el-scrollbar__bar.is-vertical {
@@ -88,6 +88,15 @@
             span{
               color: #43a7fe;
             }
+          }
+        }
+        li.is-active {
+          background-color: #fff!important;
+          .svg-icon {
+            color: #43a7fe;
+          }
+          span {
+            color: #43a7fe;
           }
         }
       }

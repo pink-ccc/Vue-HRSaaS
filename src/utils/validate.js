@@ -14,7 +14,11 @@ export function isExternal(path) {
  * @param {string} str
  * @returns {Boolean}
  */
-// 封装校验手机号函数
-export function validMobile(str) {
-  return /^1[3-9]\d{9}$/.test(str)
+// export function validUsername(str) {
+//   const valid_map = ['admin', 'editor']
+//   return valid_map.indexOf(str.trim()) >= 0
+// }
+
+export function validatemobile(str) {
+  return /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/.test(str)
 }

@@ -1,10 +1,18 @@
 <template>
   <div class="login-container">
+    <!--
+      element-ui 中表单 有三层的结构
+
+      验证数据的合法性需要三层结构，四个属性
+      el-form:model rules
+      el-form-item:prop
+      el-input
+
+    -->
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <!-- 放置标题图片 @是设置的别名-->
-        <h3 class="title"><img src="@/assets/common/login-logo.png" alt=""></h3>
+        <h3 class="title"> <img src="@/assets/common/login-logo.png" alt=""></h3>
       </div>
 
       <el-form-item prop="mobile">
@@ -14,7 +22,7 @@
         <el-input
           ref="mobile"
           v-model="loginForm.mobile"
-          placeholder="请输入手机号"
+          placeholder="请输入用户手机号"
           name="mobile"
           type="text"
           tabindex="1"
@@ -31,7 +39,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="请输入密码"
+          placeholder="请输入用户密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -42,11 +50,13 @@
         </span>
       </el-form-item>
 
-      <el-button class="loginBtn" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
+      <el-button class="loginBtn" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
+        快来登录吧
+      </el-button>
 
       <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
+        <span style="margin-right:20px;">账号: 13800000002</span>
+        <span> 密码: 123456</span>
       </div>
 
     </el-form>
@@ -54,37 +64,56 @@
 </template>
 
 <script>
-// 导入校验手机号函数
-import { validMobile } from '@/utils/validate'
-// 映射 actions里面的函数
+import { validatemobile } from '@/utils/validate'
 import { mapActions } from 'vuex'
-
 export default {
+  // 实现登录
+  // 1.收集数据(表单)
+  // 2.验证数据的合法性
+  // 3.ajax发送请求进行验证
+  // 3.1成功 获取token进行保存 跳转到首页
+  // 3.2失败 错误提示
   name: 'Login',
   data() {
-    // 自定义校验规则
-    const validateMobile = (relue, value, callback) => {
-      if (validMobile(value)) {
+    // const validateUsername = (rule, value, callback) => {
+    //   if (!validUsername(value)) {
+    //     callback(new Error('Please enter the correct user name'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
+
+    // 自定义校验的规则
+    /*
+    rule : 当前要验证字段信息  了解
+    value : 当前字段的数据
+    callback : 不管成功还是失败，都需要调用 callbakc
+    成功：callback()
+    失败：callback(new Error(失败的信息))
+
+    */
+    const validateMobile = (rule, value, callback) => {
+      if (validatemobile(value)) {
         callback()
       } else {
-        callback(new Error('手机号格式不规范'))
+        callback(new Error('手机号不合法'))
       }
     }
     return {
-      // 表单数据对象
       loginForm: {
         mobile: '13800000002',
         password: '123456'
       },
-      // 表单校验对象
       loginRules: {
         mobile: [
-          { required: true, message: '请输入手机号', trigger: ['blur', 'change'] },
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          // validator 自定义校验
           { validator: validateMobile, trigger: ['blur', 'change'] }
         ],
         password: [
           { required: true, message: '请输入密码', trigger: ['blur', 'change'] },
-          { min: 6, max: 15, message: '密码长度为6~15位', required: true, trigger: ['blur', 'change'] }]
+          { min: 6, max: 15, message: '密码长度为6~15位之间', required: true, trigger: ['blur', 'change'] }
+        ]
       },
       loading: false,
       passwordType: 'password',
@@ -100,7 +129,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('user', ['getToken']),
+    // 映射 actions 里的函数
+    ...mapActions('user', ['login']),
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -111,17 +141,19 @@ export default {
         this.$refs.password.focus()
       })
     },
-    // 登录函数
     handleLogin() {
-      // 表单兜底校验
-      this.$refs.loginForm.validate(async valid => {
-        if (!valid) return
-        // 发送登录请求，调用action
+      this.$refs.loginForm.validate(async(value) => {
+        if (!value) return
+        // 1. 发送ajax 调用vuex 中 actions中函数 并传入参数
+        // 2. 得到函数的返回值 返回的是一个proimse对象 需要加 await
         try {
           this.loading = true
-          await this.getToken(this.loginForm)
-          this.$router.push('/')
+          await this.login(this.loginForm)
+          // 走到这里只会成功
           this.$message.success('登录成功')
+          // 跳转到 主页面
+          this.$router.push('/')
+          console.log(111)
         } finally {
           this.loading = false
         }
@@ -136,7 +168,7 @@ export default {
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg:#283443;
-$light_gray: #407ffe;
+$light_gray: #407ffe; // 修改输入框字体颜色
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -145,10 +177,11 @@ $cursor: #fff;
   }
 }
 
+/* reset element-ui css */
 .login-container {
-  // 设置背景图片 如需要在样式表中使用**`@`**别名的时候，需要在@前面加上一个 `~` 符号，否则不识别
-  background-image: url('~@/assets/common/login.jpg');
-  background-position: center; // 将图片位置设置为充满整个屏幕
+    background-image: url('../../assets/common/月球.jpg'); // 设置背景图片
+    background-position: center; // 将图片位置设置为充满整个屏幕
+    background-size: cover;
   .el-input {
     display: inline-block;
     height: 47px;
@@ -172,8 +205,8 @@ $cursor: #fff;
   }
 
   .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.9); // 输入登录表单的背景色
+  //  border: 1px solid rgba(255, 255, 255, 0.1);
+    // background: rgba(255, 255, 255, 0.1); // 输入登录表单的背景色
     border-radius: 5px;
     color: #454545;
   }
@@ -182,10 +215,11 @@ $cursor: #fff;
     font-size: 14px;
  }
  .loginBtn {
-  background: #407ffe;
-  height: 64px;
-  line-height: 32px;
-  font-size: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  height: 40px;
+  line-height: 20px;
+  font-size: 20px;
+  border: none
 }
 }
 </style>
@@ -193,7 +227,7 @@ $cursor: #fff;
 <style lang="scss" scoped>
 $bg:#2d3a4b;
 $dark_gray:#889aa4;
-$light_gray: #407ffe;
+$light_gray:#eee;
 
 .login-container {
   min-height: 100%;

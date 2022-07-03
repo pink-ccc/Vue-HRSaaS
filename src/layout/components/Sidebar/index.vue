@@ -1,5 +1,6 @@
 <template>
   <div :class="{'has-logo':showLogo}">
+    <!-- logo组件 -->
     <logo v-if="showLogo" :collapse="isCollapse" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
@@ -31,6 +32,7 @@ export default {
       'sidebar'
     ]),
     routes() {
+      console.log(this.$router)
       return this.$router.options.routes
     },
     activeMenu() {

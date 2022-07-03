@@ -10,7 +10,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="staffPhoto" class="user-avatar">
+          <img v-errorImg="localImg" :src="staffphoto" class="user-avatar">
           <span class="name">{{ name }}</span>
           <i class="el-icon-caret-bottom" style="color:#fff" />
         </div>
@@ -25,7 +25,7 @@
             <el-dropdown-item>项目地址</el-dropdown-item>
           </a>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">退出登录</span>
+            <span v-color="'red'" style="display:block;">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -35,29 +35,51 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
 import Hamburger from '@/components/Hamburger'
+// 使用自定义指令 引入图片 需要导入本地图片
+import localImg from '@/assets/common/111.webp'
 
 export default {
   components: {
 
     Hamburger
   },
+  data() {
+    return {
+      localImg
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar',
       'name',
-      'staffPhoto'
+      'staffphoto'
     ])
   },
+
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    async  logout() {
+      // 复杂写法
+      // this.$confirm('是否退出?', '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(() => {
+      //   this.$message.success('退出成功')
+      //   this.$store.dispatch('user/logout')
+      //   this.$router.push('/login')
+      // }).catch(() => {
+      // })
+      // 简易写法
+      const res = await this.$confirm('是否退出？', '提示').catch(error => error)
+      if (res !== 'confirm') return
+      this.$message.success('退出成功')
+      this.$store.dispatch('user/logout')
+      this.$router.push('/login')
     }
   }
 }
@@ -65,11 +87,10 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-
   height: 50px;
   overflow: hidden;
   position: relative;
-   background-image: -webkit-linear-gradient(left, #3d6df8, #5b8cff);
+  background-image: -webkit-linear-gradient(left, #3d6df8, #5b8cff);
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
 
   .hamburger-container {

@@ -1,20 +1,24 @@
-// 导入axios
 import axios from 'axios'
-// 引入Vue
 import Vue from 'vue'
-// 引入store
 import store from '@/store'
+import router from '@/router'
+// import { MessageBox, Message } from 'element-ui'
+// import store from '@/store'
+// import { getToken } from '@/utils/auth'
 
-// 创建了一个新的axios实例
+// create an axios instance
 const request = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // 超时时间
+  timeout: 5000 // request timeout
 })
 
 // 添加请求拦截器
 request.interceptors.request.use(function(config) {
-  config.headers.Authorization = 'Bearer ' + store.getters.token
+  const token = store.getters.token
+  if (token) {
+    config.headers.Authorization = 'Bearer ' + token
+  }
   return config
 }, function(error) {
   // 对请求错误做些什么
@@ -23,21 +27,28 @@ request.interceptors.request.use(function(config) {
 
 // 添加响应拦截器
 request.interceptors.response.use(function(response) {
-  // 处理 axios 默认的一层包裹
+  // 对响应数据做点什么
   const res = response.data
-  // 如果返回的 success为false 则表示请求失败 提示用户
-  if (!res.success) {
-    // 提示用户错误信息
-    Vue.prototype.$message.error(res.message)
-    // 抛出错误对象
-    return Promise.reject(new Error(res.message))
+  const { message, success } = res
+  if (!success) {
+    Vue.prototype.$message.error(message) // 提示错误消息
+    return Promise.reject(new Error(message)) // 业务已经错误了, 应该进catch
   }
-
   return res
 }, function(error) {
-  // 提示错误消息
-  Vue.prototype.$message.error(error.message)
+  // 对响应错误做点什么, 服务器错误, 400, 404, 500
+  console.dir(error) // 便于调试
+  if (error.response.status === 401 && error.response.data.code === 10002) {
+    // 提示用户
+    Vue.prototype.$message.error('登录信息超时，请重新登录')
+    // 清空token 和userInfo
+    store.dispatch('user/logout')
+    // 跳转至登录页
+    router.push('/login')
+  } else {
+    Vue.prototype.$message.error(error.message) // 提示错误消息
+  }
   return Promise.reject(error)
 })
-// 导出实例
+
 export default request

@@ -1,9 +1,11 @@
 const getters = {
   sidebar: state => state.app.sidebar,
   device: state => state.app.device,
+  // 将token 赋值给 全局的 getters
   token: state => state.user.token,
   name: state => state.user.userInfo.username,
-  staffPhoto: state => state.user.userInfo.staffPhoto
+  staffphoto: state => state.user.userInfo.staffPhoto
 
 }
+
 export default getters

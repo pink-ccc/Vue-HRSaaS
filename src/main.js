@@ -1,47 +1,42 @@
-// 导入 Vue包
 import Vue from 'vue'
 
-// 重置全局的演示 相当于 base.css
-import 'normalize.css/normalize.css'
+// 重置css样式
+import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
-// 导入element-ui 第三方的组件库并设置语言包
+// 导入element-ui
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import locale from 'element-ui/lib/locale/lang/en' // 导入element-ui英语
+// import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
-// 设置全局的样式
-import '@/styles/index.scss'
+import '@/styles/index.scss' // global css
 
 import App from './App'
 import store from './store'
 import router from './router'
 
-// 导入svg精灵图
-import '@/icons'
-// 导入权限认证
-import '@/permission'
-// 导入axios 实例
-import request from '@/utils/request'
-// 将axios挂载到vue实例对象中
+import '@/icons' // icon
+import '@/permission' // permission control
+
+// 导入axios实例
+import request from './utils/request'
 Vue.prototype.$http = request
-
-/**
- * If you don't want to use mock-server
- * you want to use MockJs for mock api
- * you can execute: mockXHR()
- *
- * Currently MockJs will be used in the production environment,
- * please remove it before going online ! ! !
- */
-// if (process.env.NODE_ENV === 'production') {
-//   const { mockXHR } = require('../mock')
-//   mockXHR()
-// }
-
 // set ElementUI lang to EN
-Vue.use(ElementUI, { locale })
+// Vue.use(ElementUI, { locale })
+
 // 如果想要中文版 element-ui，按如下方式声明
-// Vue.use(ElementUI)
+Vue.use(ElementUI)
+
+// 全局自定义指令 导入自定义指令
+import * as directive from '@/directive'
+// 遍历对象 此时可以使用所有的自定义指令1
+for (const k in directive) {
+  Vue.directive(k, directive[k])
+}
+
+// 方法2
+// Object.keys(directive).forEach((key) => {
+//   Vue.directive(key, directive[key])
+// })
 
 Vue.config.productionTip = false
 
