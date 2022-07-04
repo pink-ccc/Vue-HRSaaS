@@ -115,3 +115,20 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+// 定义将列表数据转为树状数据
+export const tranListToTreeData = (arr, value) => {
+  const newArr = []
+  arr.forEach((item) => {
+    if (item.pid === value) {
+      // newArr.push(item)
+      // 因为每个1级树状的id属性和 二级菜单的pid相同 则将每个二级菜单过滤出来
+      const children = tranListToTreeData(arr, item.id)
+      if (children.length > 0) {
+        item.children = children
+      }
+      newArr.push(item)
+    }
+  })
+  return newArr
+}
