@@ -14,3 +14,27 @@ export const reqDelDepartments = (id) => {
     url: `/company/department/${id}`
   })
 }
+// 封装新增部门
+export const getDepartment = (data) => {
+  return request({
+    method: 'post',
+    url: '/company/department',
+    data
+  })
+}
+// 封装根据ID修改部门详情
+export const reqEditDepartment = (data) => {
+  return request({
+    method: 'put',
+    url: `/company/department/${data.id}`,
+    data
+  })
+}
+
+// 获取信息模块
+export const reqGetDepartDetail = (id) => {
+  return request({
+    url: `/company/department/${id}`
+  })
+}
+

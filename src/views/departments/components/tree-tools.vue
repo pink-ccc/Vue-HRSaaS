@@ -64,7 +64,10 @@ export default {
         })
       }
       if (type === 'add') {
-        this.$emit('add-Departments')
+        this.$emit('add-Departments', this.nodeData)
+      }
+      if (type === 'edit') {
+        this.$emit('edit-Departments', this.nodeData)
       }
     }
   }

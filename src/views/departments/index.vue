@@ -1,10 +1,10 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      <el-card class="tree-card">
+      <el-card v-loading="loading" class="tree-card">
         <!-- 公司名称 -->
         <!-- 子向父传值 因为 -->
-        <tree-tools :node-data="company" :is-root="true" />
+        <tree-tools :node-data="company" :is-root="true" @add-Departments="addDepartments" />
         <!-- props绑定自定义属性 -->
         <!-- 放置一个el-tree组件 -->
         <el-tree
@@ -15,11 +15,22 @@
           <!-- 使用作用域插槽 -->
           <template v-slot="{data}">
             <!-- 部门名称 -->
-            <TreeTools :node-data="data" @del-Departments="getDepartments" @add-Departments="addDepartments" />
+            <TreeTools
+              :node-data="data"
+              @del-Departments="getDepartments"
+              @add-Departments="addDepartments"
+              @edit-Departments="editDepartments"
+            />
           </template>
         </el-tree>
         <!-- 控制添加部门弹出框组件 -->
-        <add-dept :show-dialog="showDialog" @add-handleClose="showDialog=false" />
+        <add-dept
+          ref="addDept"
+          :show-dialog.sync="showDialog"
+          :node-data="nodeData"
+          :new-list="newList"
+          @addDept="getDepartments"
+        />
       </el-card>
     </div>
   </div>
@@ -38,13 +49,20 @@ export default {
   },
   data() {
     return {
+      // 部门信息树状数据
       list: [],
+      // 绑定子数据
       defaultProps: {
         label: 'name',
+        nodeData: {},
         children: 'children'
       },
       company: { name: '大聪明控股有限集团', manager: '负责人' },
-      showDialog: false
+      showDialog: false,
+      nodeData: {},
+      // 部门信息原数据
+      newList: [],
+      loading: false
     }
   },
   created() {
@@ -53,13 +71,30 @@ export default {
   methods: {
     // 获取企业部门信息函数
     async getDepartments() {
+      this.loading = true
       const { data: res } = await reqGetDepartments()
-      this.company = { name: res.companyName, manager: '负责人' }
+      this.newList = res.depts
+      this.company = { name: res.companyName, manager: '负责人', id: '' }
       this.list = tranListToTreeData(res.depts, '')
+      this.loading = false
     },
     // 添加部门对话框
-    addDepartments() {
+    addDepartments(nodeData) {
       this.showDialog = true
+      this.nodeData = nodeData
+      // 调用addDept组件的函数 由于diglog为异步函数 则需要调用$nextTick方法
+      this.$nextTick(() => {
+        this.$refs.addDept.getEmployee()
+      })
+    },
+    // 编辑添加弹出对话框
+    editDepartments(nodeData) {
+      this.showDialog = true
+      this.nodeData = nodeData
+      // 调用addDept组件函数 获取部门信息
+      this.$nextTick(() => {
+        this.$refs.addDept.editDepartment()
+      })
     }
   }
 }
