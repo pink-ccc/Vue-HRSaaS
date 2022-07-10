@@ -1,6 +1,6 @@
 <template>
   <!-- 新增部门的弹层 -->
-  <el-dialog :title="showTitle" :visible.sync="showDialog" @close="handleCloseDialog">
+  <el-dialog :title="showTitle" :visible="showDialog" @close="handleCloseDialog">
     <!-- 表单组件  el-form   label-width设置label的宽度   -->
     <!-- 匿名插槽 -->
     <el-form ref="ruleForm" label-width="120px" :model="form" :rules="formRules">
@@ -104,6 +104,7 @@ export default {
         ]
 
       },
+      //
       emploteeList: []
 
     }

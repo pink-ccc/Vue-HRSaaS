@@ -32,7 +32,7 @@
 <script>
 import { reqDelDepartments } from '@/api/departments'
 export default {
-
+  name: 'TreeTools',
   props: {
     // 定义传入的属性
     nodeData: {

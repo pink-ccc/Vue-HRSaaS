@@ -5,8 +5,8 @@
         <!-- 公司名称 -->
         <!-- 子向父传值 因为 -->
         <tree-tools :node-data="company" :is-root="true" @add-Departments="addDepartments" />
-        <!-- props绑定自定义属性 -->
-        <!-- 放置一个el-tree组件 -->
+        <!-- :props 绑定自定义属性 -->
+        <!-- :data 树形组件的数据 -->
         <el-tree
           :data="list"
           :props="defaultProps"
@@ -21,6 +21,7 @@
               @add-Departments="addDepartments"
               @edit-Departments="editDepartments"
             />
+
           </template>
         </el-tree>
         <!-- 控制添加部门弹出框组件 -->
@@ -51,7 +52,7 @@ export default {
     return {
       // 部门信息树状数据
       list: [],
-      // 绑定子数据
+      // 绑定子数据r
       defaultProps: {
         label: 'name',
         nodeData: {},

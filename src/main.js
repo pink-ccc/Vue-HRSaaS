@@ -38,6 +38,10 @@ for (const k in directive) {
 //   Vue.directive(key, directive[key])
 // })
 
+// 引入所有全局组件 并在Vue.use中注册
+import Components from '@/components/index'
+Vue.use(Components)
+
 Vue.config.productionTip = false
 
 new Vue({
